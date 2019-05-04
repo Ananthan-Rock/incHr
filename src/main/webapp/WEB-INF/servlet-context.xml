@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/mvc"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
@@ -24,13 +26,13 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 
-	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<beans:property name="url"
-			value="jdbc:mysql://localhost:3306/TestDB" />
-		<beans:property name="username" value="root" />
-		<beans:property name="password" value="mithra" />
+	<context:property-placeholder location="classpath:database.properties" />
+
+	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<beans:property name="driverClassName" value="${database.driver}" />
+		<beans:property name="url" value="${database.url}" />
+		<beans:property name="username" value="${database.username}" />
+		<beans:property name="password" value="${database.password}" />
 	</beans:bean>
 
 	<!-- Hibernate 4 SessionFactory Bean definition -->
@@ -39,7 +41,6 @@
 		<beans:property name="dataSource" ref="dataSource" />
 		<beans:property name="annotatedClasses">
 			<beans:list>
-				<beans:value>com.journaldev.spring.model.Person</beans:value>
 				<beans:value>com.inc.user.model.User</beans:value>
 			</beans:list>
 		</beans:property>
@@ -51,27 +52,21 @@
 			</beans:props>
 		</beans:property>
 	</beans:bean>
-	
-	<beans:bean id="personDAO" class="com.journaldev.spring.dao.PersonDAOImpl">
-		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
-	</beans:bean>
-	<beans:bean id="personService" class="com.journaldev.spring.service.PersonServiceImpl">
-		<beans:property name="personDAO" ref="personDAO"></beans:property>
-	</beans:bean>
-		<beans:bean id="userDao" class="com.inc.user.daoImpl.UserDaoImpl">
+
+	<beans:bean id="userDao" class="com.inc.user.daoImpl.UserDaoImpl">
 		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
 	<beans:bean id="userService" class="com.inc.user.serviceImpl.UserServiceImpl">
 		<beans:property name="userDao" ref="userDao"></beans:property>
 	</beans:bean>
-	<context:component-scan base-package="com.journaldev.spring" />
-	<context:component-scan base-package="com.inc.user.controller" />
-	
-	<tx:annotation-driven transaction-manager="transactionManager"/>
-	
-	<beans:bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+
+	<context:component-scan base-package="com.inc.user.controller, com.inc.security.SecurityConfig" />
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+	<beans:bean id="transactionManager"	class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
 	</beans:bean>
-
 
 </beans:beans>
