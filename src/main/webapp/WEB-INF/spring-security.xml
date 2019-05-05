@@ -14,10 +14,10 @@
 		<!-- access denied page -->
 		<access-denied-handler error-page="/403" />
 		
-		<form-login login-page="/" 
+		<form-login login-page="/login" 
 		    default-target-url="/welcome" 
 			authentication-failure-url="/login?error" 
-			username-parameter="email"
+			username-parameter="username"
 			password-parameter="password" />
 		<logout logout-success-url="/login?logout"  />
 		<!-- enable csrf protection -->
@@ -29,9 +29,9 @@
 	  <authentication-provider>
 		<jdbc-user-service data-source-ref="dataSource"
 		  users-by-username-query=
-		    "select email,password, enabled from users where email=?"
+		    "select email as username, password, 1 as enabled from user where email=?"
 		  authorities-by-username-query=
-		    "select email, role from user_roles where email =?  " />
+		    "select email as username, role from user_roles where email=?" />
 	  </authentication-provider>
 	</authentication-manager>
 

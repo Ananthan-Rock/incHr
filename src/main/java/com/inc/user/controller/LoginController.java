@@ -5,6 +5,8 @@ package com.inc.user.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +22,7 @@ import com.inc.user.model.User;
 @Controller
 public class LoginController {
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String onEntry(Model model, HttpServletRequest request) {
 		User user = new User();
 		return "Login";
@@ -28,11 +30,33 @@ public class LoginController {
 	
 	@RequestMapping(value = "/welcome", method = RequestMethod.GET)
 	public String defaultPage(Model model) {
+	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	  String welcomeMessage = "Welcome "+authentication.getName()+"!!";
 	  model.addAttribute("title", "Spring Security Login Form - Database Authentication");
 	  model.addAttribute("message", "This is default page!");
 	  return "hello";
-
 	}
+	
+	@RequestMapping("/error")
+    public String error(Model model) {
+        model.addAttribute("error", "true");
+        return "Login";
+    }
+	
+	@RequestMapping("/403")
+	@ResponseBody
+    public String accessDenied(Model model) {
+        model.addAttribute("error", "true");
+        return "Access Denied page";
+    }
+	
+	@RequestMapping("/logout")
+    public String logout(Model model){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.setAuthenticated(false);
+        model.addAttribute("logout", "true");
+        return "Login";
+    }
 	
 	@RequestMapping(value = "/readFile", method = RequestMethod.GET)
 	@ResponseBody
