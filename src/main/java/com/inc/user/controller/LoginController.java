@@ -22,7 +22,7 @@ import com.inc.user.model.User;
 @Controller
 public class LoginController {
 	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String onEntry(Model model, HttpServletRequest request) {
 		User user = new User();
 		return "Login";
